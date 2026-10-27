@@ -1,6 +1,10 @@
 import numpy as np
 
+
 class KalmanFilter:
+    """Linear Kalman filter. The gain is computed with a linear solve rather than an explicit inverse, and the
+    covariance update uses the Joseph form, which stays symmetric and positive semi-definite in floating point."""
+
     def __init__(self, F, H, Q, R, P, x0):
         self.F = F
         self.H = H
@@ -15,9 +19,10 @@ class KalmanFilter:
         return self.x
 
     def update(self, z):
-        y = z - self.H @ self.x
-        S = self.H @ self.P @ self.H.T + self.R
-        K = self.P @ self.H.T @ np.linalg.inv(S)
+        y = z - self.H @ self.x                                  # innovation
+        S = self.H @ self.P @ self.H.T + self.R                  # innovation covariance
+        K = np.linalg.solve(S, self.H @ self.P.T).T              # gain, P H^T S^-1 without inv()
         self.x = self.x + K @ y
-        self.P = self.P - K @ self.H @ self.P
+        I_KH = np.eye(self.P.shape[0]) - K @ self.H
+        self.P = I_KH @ self.P @ I_KH.T + K @ self.R @ K.T       # Joseph form
         return self.x
