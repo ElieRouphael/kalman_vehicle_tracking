@@ -14,8 +14,9 @@ dt = df["time"].iloc[1] - df["time"].iloc[0]
 
 F = np.array([[1, dt], [0, 1]])
 H = np.array([[1, 0]])
-# Process noise. The chirp 15 sin(t^2) accelerates hard, so diag(1, 3) (the original choice) is about ten
-# times too small for it: position RMSE 4.50 m against 2.93 m with the scale below (raw sensor: 5.00 m).
+# Process noise. The chirp 15 sin(t^2) accelerates hard, so diag(1, 3) (the original choice) is five to ten
+# times too small for it. On data/example_data.csv the position RMSE is 4.49 m with diag(1, 3) and 2.99 m with
+# the scale below (raw sensor: 4.89 m).
 Q = 10 * np.array([[1, 0], [0, 3]])
 R = np.array([[25]])
 P = np.eye(2)
